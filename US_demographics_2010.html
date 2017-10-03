@@ -1,0 +1,404 @@
+<!-- Juan Aguirre -->
+
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
+
+  <title>United States minority population for the year of 2010</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/3.22/dijit/themes/claro/claro.css">
+
+  <link rel="stylesheet" href="https://js.arcgis.com/3.22/esri/css/esri.css">
+
+  <style>
+
+    html, body, #map {
+
+      height: 100%;
+
+      margin: 0;
+
+    }
+
+
+
+    #meta {
+
+      position: absolute;
+
+      left: 20px;
+
+      bottom: 20px;
+
+      width: 20em;
+
+      height: 16em;
+
+      z-index: 40;
+
+      background: #000;
+
+      color: #fff;
+
+      padding: 8px;
+
+      border: 2px solid #666666;
+
+      -webkit-border-radius: 5px;
+
+      -moz-border-radius: 5px;
+
+      border-radius: 5px;
+
+      font-family: arial;
+
+      font-size: 0.9em;
+
+    }
+
+
+
+    #meta h2 {
+
+      color: #fff;
+
+      font-size: 1.2em;
+
+      padding: 0px;
+
+      margin: 0px;
+
+      display: inline-block;
+
+    }
+
+  </style>
+
+  <script src="https://js.arcgis.com/3.22/"></script>
+
+  <script>
+
+    require([
+
+      "dojo/_base/array", "esri/Color", "esri/dijit/PopupTemplate", "esri/layers/ArcGISTiledMapServiceLayer", "esri/layers/FeatureLayer",
+
+      "esri/map", "esri/renderers/BlendRenderer",
+
+      "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "dojo/domReady!"
+
+    ], function (array, Color, PopupTemplate, ArcGISTiledMapServiceLayer, FeatureLayer, Map, BlendRenderer, SimpleFillSymbol, SimpleLineSymbol){
+
+
+
+      var map = new Map("map", {
+
+        //basemap: "gray",  //"topo"
+
+        center: [-100, 38],
+
+        zoom: 5
+
+      });
+
+
+
+      var tileLayer = new ArcGISTiledMapServiceLayer("https://tiles.arcgis.com/tiles/nzS0F0zdNLvs7nc8/arcgis/rest/services/US_Counties_basemap/MapServer ");
+
+      map.addLayer(tileLayer);
+
+
+
+      var layerUrl ="https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Counties_Generalized/FeatureServer/0";
+
+
+
+      //Create the PopupTemplate to be used to display demographic info
+
+      var template = new PopupTemplate({
+
+        "title": "{NAME} County, {STATE_NAME}",
+
+        "fieldInfos": [
+
+          {
+
+            "fieldName": "POP2010",
+
+            "label": "2010 Population",
+
+            "visible": true,
+
+            "format": {
+
+              "places": 0,
+
+              "digitSeparator": true
+
+            }
+
+          }, {
+
+            "fieldName": "POP10_SQMI",
+
+            "label": "Density, per sq. mi.",
+
+            "visible": true,
+
+            "format": {
+
+              "places": 0,
+
+              "digitSeparator": true
+
+            }
+
+          }, {
+
+            "fieldName": "WHITE",
+
+            "label": "White",
+
+            "visible": true,
+
+            "format": {
+
+              "places": 0,
+
+              "digitSeparator": true
+
+            }
+
+          },  {
+
+            "fieldName": "OTHER",
+
+            "label": "Other",
+
+            "visible": true,
+
+            "format": {
+
+              "places": 0,
+
+              "digitSeparator": true
+
+            }
+
+          },{
+
+            "fieldName": "ASIAN",
+
+            "label": "Asian",
+
+            "visible": true,
+
+            "format": {
+
+              "places": 0,
+
+              "digitSeparator": true
+
+            }
+
+          }, {
+
+            "fieldName": "BLACK",
+
+            "label": "African American",
+
+            "visible": true,
+
+            "format": {
+
+              "places": 0,
+
+              "digitSeparator": true
+
+            }
+
+          }, {
+
+            "fieldName": "HISPANIC",
+
+            "label": "Hispanic",
+
+            "visible": true,
+
+            "format": {
+
+              "places": 0,
+
+              "digitSeparator": true
+
+            }
+
+          }, {
+
+            "fieldName": "AMERI_ES",
+
+            "label": "Native American/Alaskan",
+
+            "visible": true,
+
+            "format": {
+
+              "places": 0,
+
+              "digitSeparator": true
+
+            }
+
+          }
+
+        ]
+
+      });
+
+
+
+      //Set the blendRenderer's parameters
+
+      var blendRendererOptions = {
+
+        blendMode: "darken", //By default, it uses "source-over", uncomment to display different mode
+
+        //See: http://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+
+        symbol: new SimpleFillSymbol().setOutline(new SimpleLineSymbol().setWidth(0)),
+
+        fields: [
+
+          {
+
+            field: "AMERI_ES",
+
+            color: new Color([230, 0, 0])
+
+          }, {
+
+            field: "HISPANIC",
+
+            color: new Color([0,128,0])
+
+          }, {
+
+            field: "BLACK",
+
+            color: new Color([0,0,205])
+
+          },{
+
+            field: "OTHER",
+
+            color: new Color([253, 255, 51])
+
+          }, {
+
+            field: "ASIAN",
+
+            color: new Color([255,20,147])
+
+          }
+
+        ],
+
+        opacityStops: [
+
+          {
+
+            value: 0,
+
+            opacity: 0
+
+          },
+
+          {
+
+            value: .2,
+
+            opacity: .7
+
+          }
+
+        ],
+
+        normalizationField: "POP2010"
+
+      };
+
+
+
+      renderer = new BlendRenderer(blendRendererOptions);
+
+
+
+      layer = new FeatureLayer(layerUrl, {
+
+        outFields: ["WHITE", "POP2010", "AMERI_ES", "HISPANIC", "BLACK",  "ASIAN", "OTHER", "POP10_SQMI", "NAME", "STATE_NAME"],
+
+        opacity: 1,
+
+        infoTemplate: template
+
+      });
+
+
+
+      layer.setRenderer(renderer);
+
+      map.addLayer(layer);
+
+
+
+    });
+
+  </script>
+
+  </head>
+
+  <body class="claro">
+
+    <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design: 'headline',gutters:false" style="width: 100%; height: 100%; margin: 0;">
+
+      <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region: 'center'">
+
+         <div id="meta">
+
+            <h2>Minority Populations(2010)</h2>
+
+            <br>
+
+            <br>This particular map demonstrates minority population concentrations throughout the United States.
+
+            <ul>
+
+             <li style = "color: #E60000" >Red: Native American/Alaskan</li>
+
+             <li style = "color: #C71585" >  Pink/Purple: Asian</li>
+
+             <li  style = "color: #0000CD" > Blue: African American</li>
+
+             <li  style = "color: #008000" > Green: Hispanic</li>
+
+             <li  style = "color: #FDFF33" > Yellow: Other</li>
+
+            </ul>
+
+            The more opaque the color, the higher the concentration for that demographic.
+
+         </div>
+
+      </div>
+
+    </div>
+
+  </body>
+
+</html>
+
